@@ -1,0 +1,2 @@
+# airvat-admin-db-seed
+
