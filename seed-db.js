@@ -7,7 +7,7 @@ const admin = require('./firebase-app').app;
 const MAX_TRIPS_PER_USER = 3; 
 const MAX_RECEIPTS_PER_TRIP = 10;
 const MAX_RECEIPT_ITEMS_PER_RECEIPT = 10;
-const USERS_TO_CREATE = 2;
+const USERS_TO_CREATE = 200;
 
 // Mock data
 const names = ['OLIVIA','RUBY','EMILY','GRACE','JESSICA','CHLOE','SOPHIE','LILY','AMELIA','EVIE','MIA','ELLA','CHARLOTTE','LUCY','MEGAN','ELLIE','ISABELLE','ISABELLA','HANNAH','KATIE','AVA','HOLLY','SUMMER','MILLIE','DAISY','PHOEBE','FREYA','ABIGAIL','POPPY','ERIN','EMMA','MOLLY','IMOGEN','AMY','JASMINE','ISLA','SCARLETT','LEAH','SOPHIA','ELIZABETH','EVA','BROOKE','MATILDA','CAITLIN','KEIRA','ALICE','LOLA','LILLY','AMBER','ISABEL','LAUREN','GEORGIA','GRACIE','ELEANOR','BETHANY','MADISON','AMELIE','ISOBEL','PAIGE','LACEY','SIENNA','LIBBY','MAISIE','ANNA','REBECCA','ROSIE','TIA','LAYLA','MAYA','NIAMH','ZARA','SARAH','LEXI','MADDISON','ALISHA','SOFIA','SKYE','NICOLE','LEXIE','FAITH','MARTHA','HARRIET','ZOE','EVE','JULIA','AIMEE','HOLLIE','LYDIA','EVELYN','ALEXANDRA','MARIA','FRANCESCA','TILLY','FLORENCE','ALICIA','ABBIE','EMILIA','COURTNEY','MARYAM','ESME',' ','JACK','OLIVER','THOMAS','HARRY','JOSHUA','ALFIE','CHARLIE','DANIEL','JAMES','WILLIAM','SAMUEL','GEORGE','JOSEPH','LEWIS','ETHAN','MOHAMMED','DYLAN','BENJAMIN','ALEXANDER','JACOB','RYAN','LIAM','JAKE','MAX','LUKE','TYLER','CALLUM','MATTHEW','JAYDEN','OSCAR','ARCHIE','ADAM','RILEY','HARVEY','HARRISON','LUCAS','MUHAMMAD','HENRY','ISAAC','LEO','CONNOR','EDWARD','FINLEY','LOGAN','NOAH','CAMERON','ALEX','OWEN','RHYS','NATHAN','JAMIE','MICHAEL','MASON','TOBY','AARON','CHARLES','BEN','THEO','LOUIS','FREDDIE','FINLAY','LEON','HARLEY','DAVID','MOHAMMAD','REECE','KIAN','KAI','KYLE','BRANDON','HAYDEN','ZACHARY','KIERAN','LUCA','ASHTON','BAILEY','SEBASTIAN','GABRIEL','SAM','EVAN','BRADLEY','ELLIOT','JOHN','TAYLOR','JOE','COREY','REUBEN','JOEL','ROBERT','ELLIS','BLAKE','AIDAN','LOUIE','CHRISTOPHER','EWAN','JAY','MORGAN','BILLY','SEAN','ZAK'];
@@ -285,8 +285,7 @@ asyncForEach([...Array(USERS_TO_CREATE).keys()],
     const userRef = admin.database().ref().child(`users/${userResult.uid}`);
 
     console.log(userResult)
-  
-    userRef.set({
+    const userData = {
         email: userResult.email,
         name: userResult.displayName,
         firstName: userResult.displayName.split(' ')[0],
@@ -294,7 +293,12 @@ asyncForEach([...Array(USERS_TO_CREATE).keys()],
         account: randomUser.account,
         meta: { ...userResult.metadata, creationTime: +moment(userResult.metadata) },
         lastActive: randomUser.lastActive,
-    })
+    };
+
+    userRef.set(userData);
+
+
+    admin.firestore().collection('users').doc(userResult.uid).set(userData);
 
     console.log('Random User Firebase Entry Created');
 
@@ -388,5 +392,4 @@ asyncForEach([...Array(USERS_TO_CREATE).keys()],
     })
 
     console.log('User entry successfully saved');
-    process.exit();
 })
